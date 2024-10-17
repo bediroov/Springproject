@@ -1,34 +1,54 @@
 package group.studentmanager.maper;
-
+import group.studentmanager.dao.entity.CardEntity;
 import group.studentmanager.dao.entity.StudentEntity;
+import group.studentmanager.model.dto.CardDto;
 import group.studentmanager.model.RequestStudent;
 import group.studentmanager.model.ResponseStudent;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
+import java.util.List;
 
-@Component
-public class StudentMapper {
 
+@Mapper(componentModel = "spring")
+
+public abstract class StudentMapper {
 
     //Bu Response Studentucundur
-    public ResponseStudent mapToResponseDto(StudentEntity studentEntity) {
-        ResponseStudent responseStudent = new ResponseStudent();
+    @Mapping(target = "score", source = "score", qualifiedByName = "scoretoletter")
+    public abstract ResponseStudent mapToResponseDto(StudentEntity studentEntity);
 
-        responseStudent.setId(studentEntity.getId());
-        responseStudent.setName(studentEntity.getName());
-        responseStudent.setSurname(studentEntity.getSurname());
-        responseStudent.setAge(studentEntity.getAge());
-        return responseStudent;
-    }
+
+    public abstract List<ResponseStudent> listToDto(List<StudentEntity> StudentPage);
+
 
     // RequestStudent üçün mapper
+    @Mapping(target = "card", source = "card")
+    public abstract StudentEntity mapToEntity(RequestStudent requestStudent);
 
-    public StudentEntity mapToEntity(RequestStudent requestStudent) {
 
-        StudentEntity studentEntity1 = new StudentEntity();
-        studentEntity1.setName(requestStudent.getName());
-        studentEntity1.setSurname(requestStudent.getSurname());
-        studentEntity1.setAge(requestStudent.getAge());
+    public abstract CardEntity mapToCardEntity(CardDto cardDto);
 
-        return studentEntity1;
+    @Named("scoretoletter")
+
+    public String maptoLetter(Long score) {
+        if (score.equals(null)) {
+            return null;
+        } else if (score > 90) {
+            return "A";
+        } else if (score > 80) {
+            return "B";
+        } else if (score > 70) {
+            return "C";
+        } else if (score > 60) {
+            return "D";
+        } else if (score > 50) {
+            return "E";
+        } else {
+            return "F";
+        }
     }
+
+
+
 }
